@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 	"rsch/profile_service/helper"
 	"rsch/profile_service/model/domain"
 	"rsch/profile_service/model/web"
+	"strings"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -33,11 +35,47 @@ func (controller *User) Create(w http.ResponseWriter, r *http.Request, params ht
 	helper.WriteToResponseBody(w, http.StatusOK, webResponse)
 }
 
+func (controller *User) FindUserById(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	authorizationHeader := r.Header.Get("Authorization")
+	token := strings.TrimPrefix(authorizationHeader, "Bearer ")
+
+	data := controller.UserService.FindUserById(r.Context(), token)
+
+	webResponse := web.WebResponse{
+		StatusCode:    http.StatusOK,
+		StatusMessage: http.StatusText(http.StatusOK),
+		Data:          data,
+	}
+
+	helper.WriteToResponseBody(w, http.StatusOK, webResponse)
+}
+
+func (controller *User) FindUserByEmailAndPassword(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	email := r.URL.Query().Get("email")
+	password := r.URL.Query().Get("password")
+
+	if email == "" || password == "" {
+		panic(errors.New(""))
+	}
+
+	data := controller.UserService.FindUserByEmailAndPassword(r.Context(), email, password)
+	webResponse := web.WebResponse{
+		StatusCode:    http.StatusOK,
+		StatusMessage: http.StatusText(http.StatusOK),
+		Data:          data,
+	}
+
+	helper.WriteToResponseBody(w, http.StatusOK, webResponse)
+}
+
 func (controller *User) ChangePassword(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	authorizationHeader := r.Header.Get("Authorization")
+	token := strings.TrimPrefix(authorizationHeader, "Bearer ")
+
 	changePasswordRequest := web.ChangePasswordRequest{}
 	helper.ReadFromRequestBody(r, &changePasswordRequest)
 
-	controller.UserService.ChangePassword(r.Context(), changePasswordRequest)
+	controller.UserService.ChangePassword(r.Context(), token, changePasswordRequest)
 	webResponse := web.WebResponse{
 		StatusCode:    http.StatusOK,
 		StatusMessage: http.StatusText(http.StatusOK),
@@ -47,10 +85,13 @@ func (controller *User) ChangePassword(w http.ResponseWriter, r *http.Request, p
 }
 
 func (controller *User) UpdateProfile(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	authorizationHeader := r.Header.Get("Authorization")
+	token := strings.TrimPrefix(authorizationHeader, "Bearer ")
+
 	updateProfileRequest := web.UpdateProfileRequest{}
 	helper.ReadFromRequestBody(r, &updateProfileRequest)
 
-	data := controller.UserService.UpdateProfile(r.Context(), updateProfileRequest)
+	data := controller.UserService.UpdateProfile(r.Context(), token, updateProfileRequest)
 	webResponse := web.WebResponse{
 		StatusCode:    http.StatusOK,
 		StatusMessage: http.StatusText(http.StatusOK),
@@ -61,10 +102,13 @@ func (controller *User) UpdateProfile(w http.ResponseWriter, r *http.Request, pa
 }
 
 func (controller *User) UpdatePhoneNumber(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	authorizationHeader := r.Header.Get("Authorization")
+	token := strings.TrimPrefix(authorizationHeader, "Bearer ")
+
 	updatePhoneNumberRequest := web.UpdatePhoneNumberRequest{}
 	helper.ReadFromRequestBody(r, &updatePhoneNumberRequest)
 
-	data := controller.UserService.UpdatePhoneNumber(r.Context(), updatePhoneNumberRequest)
+	data := controller.UserService.UpdatePhoneNumber(r.Context(), token, updatePhoneNumberRequest)
 	webResponse := web.WebResponse{
 		StatusCode:    http.StatusOK,
 		StatusMessage: http.StatusText(http.StatusOK),

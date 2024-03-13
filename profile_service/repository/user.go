@@ -68,7 +68,7 @@ func (repository *User) UpdateUsername(ctx context.Context, tx *sql.Tx, user dom
 }
 
 func (repository *User) UpdatePhoneNumber(ctx context.Context, tx *sql.Tx, user domain.User) (domain.User, error) {
-	SQL := "UPDATE users SET fullname = ? WHERE id = ?"
+	SQL := "UPDATE users SET phone_number = ? WHERE id = ?"
 	res, err := tx.ExecContext(ctx, SQL, user.PhoneNumber, user.Id)
 	helper.PanicIfError(err)
 
@@ -76,6 +76,23 @@ func (repository *User) UpdatePhoneNumber(ctx context.Context, tx *sql.Tx, user 
 	helper.PanicIfError(err)
 
 	if rows > 0 {
+		return user, nil
+	}
+
+	return user, errors.New("user not found")
+}
+
+func (repository *User) FindUserById(ctx context.Context, tx *sql.Tx, user domain.User) (domain.User, error) {
+	SQL := "SELECT email, fullname, username, phone_number FROM users WHERE id = ?"
+	rows, err := tx.QueryContext(ctx, SQL, user.Id)
+	helper.PanicIfError(err)
+	defer rows.Close()
+
+	user = domain.User{}
+	if rows.Next() {
+		err := rows.Scan(&user.Email, &user.Fullname, &user.Username, &user.PhoneNumber)
+		helper.PanicIfError(err)
+
 		return user, nil
 	}
 
@@ -110,6 +127,24 @@ func (repository *User) FindEmailIsExist(ctx context.Context, tx *sql.Tx, user d
 	}
 
 	return nil
+}
+
+func (repository *User) FindOldPassword(ctx context.Context, tx *sql.Tx, user domain.User) (domain.User, error) {
+	SQL := "SELECT id, password FROM users WHERE id = ?"
+	rows, err := tx.QueryContext(ctx, SQL, user.Id)
+	helper.PanicIfError(err)
+	defer rows.Close()
+
+	user = domain.User{}
+
+	if rows.Next() {
+		err := rows.Scan(&user.Id, &user.Password)
+		helper.PanicIfError(err)
+
+		return user, nil
+	}
+
+	return user, errors.New("user not found")
 }
 
 func (repository *User) FindUsernameIsExist(ctx context.Context, tx *sql.Tx, user domain.User) error {
