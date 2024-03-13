@@ -18,3 +18,9 @@ func WriteToResponseBody(w http.ResponseWriter, status int, response interface{}
 	err := encoder.Encode(response)
 	PanicIfError(err)
 }
+
+func ReadFromResponseBody(r *http.Response, responseBody interface{}) {
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&responseBody)
+	PanicIfError(err)
+}

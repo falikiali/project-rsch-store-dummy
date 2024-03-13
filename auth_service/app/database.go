@@ -2,19 +2,17 @@ package app
 
 import (
 	"database/sql"
-	"os"
+	"fmt"
+	"rsch/auth_service/app/config"
 	"rsch/auth_service/helper"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 )
 
-func NewDB() *sql.DB {
-	err := godotenv.Load()
-	helper.PanicIfError(err)
-
-	db, err := sql.Open(os.Getenv("DB"), os.Getenv("DB_USER")+":"+os.Getenv("DB_PASSWORD")+"@"+os.Getenv("DB_PROTOCOL")+"("+os.Getenv("DB_ADDRESS")+")/"+os.Getenv("DB_NAME"))
+func NewDB(configDB *config.Config) *sql.DB {
+	dbSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", configDB.Database.User, configDB.Database.Password, configDB.Database.Host, configDB.Database.Port, configDB.Database.Name)
+	db, err := sql.Open("mysql", dbSourceName)
 	helper.PanicIfError(err)
 
 	db.SetMaxIdleConns(5)
