@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"errors"
 	"net/http"
+	"rsch/profile_service/exception"
 	"rsch/profile_service/helper"
 	"rsch/profile_service/model/domain"
 	"rsch/profile_service/model/web"
@@ -55,7 +55,7 @@ func (controller *User) FindUserByEmailAndPassword(w http.ResponseWriter, r *htt
 	password := r.URL.Query().Get("password")
 
 	if email == "" || password == "" {
-		panic(errors.New(""))
+		panic(exception.NewBadRequestError("email or password is cannot be empty"))
 	}
 
 	data := controller.UserService.FindUserByEmailAndPassword(r.Context(), email, password)
