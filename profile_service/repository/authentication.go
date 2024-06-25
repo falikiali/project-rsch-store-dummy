@@ -20,7 +20,7 @@ func NewAuthentication(client *http.Client) domain.AuthenticationRepository {
 }
 
 func (repository *Authentication) ValidateToken(ctx context.Context, accessToken string) (domain.User, error) {
-	endpoint := "http://localhost:3000/api/v3/authentication"
+	endpoint := "http://192.168.1.9:3000/api/v3/authentication"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
 	helper.PanicIfError(err)

@@ -90,8 +90,27 @@ func (repository *User) FindUserById(ctx context.Context, tx *sql.Tx, user domai
 
 	user = domain.User{}
 	if rows.Next() {
-		err := rows.Scan(&user.Email, &user.Fullname, &user.Username, &user.PhoneNumber)
+		var phoneNumber, fullname, username sql.NullString
+		err := rows.Scan(&user.Email, &fullname, &username, &phoneNumber)
 		helper.PanicIfError(err)
+
+		if phoneNumber.Valid {
+			user.PhoneNumber = phoneNumber.String
+		} else {
+			user.PhoneNumber = ""
+		}
+
+		if fullname.Valid {
+			user.Fullname = fullname.String
+		} else {
+			user.Fullname = ""
+		}
+
+		if username.Valid {
+			user.Username = username.String
+		} else {
+			user.Username = ""
+		}
 
 		return user, nil
 	}
