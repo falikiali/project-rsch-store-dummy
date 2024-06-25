@@ -23,7 +23,7 @@ func NewUser(client *http.Client) domain.UserRepository {
 }
 
 func (repository *User) CreateUser(ctx context.Context, request web.RegisterRequest) (domain.User, error) {
-	endpoint := "http://localhost:3001/api/v3/user"
+	endpoint := "http://192.168.1.9:3001/api/v3/user"
 	requestBody, err := json.Marshal(request)
 	helper.PanicIfError(err)
 
@@ -59,7 +59,7 @@ func (repository *User) CreateUser(ctx context.Context, request web.RegisterRequ
 }
 
 func (repository *User) FindUserByEmailAndPassword(ctx context.Context, request web.LoginRequest) (domain.User, error) {
-	endpoint := "http://localhost:3001/api/v3/user/validate"
+	endpoint := "http://192.168.1.9:3001/api/v3/user/validate"
 	params := url.Values{}
 	params.Add("email", request.Email)
 	params.Add("password", request.Password)
