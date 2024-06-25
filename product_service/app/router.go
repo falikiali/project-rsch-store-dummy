@@ -17,5 +17,7 @@ func NewRouter(controller domain.ProductController) *httprouter.Router {
 	router.GET("/api/v3/product/:idProduct", controller.FindProductById)
 	router.GET("/image/:idImage", controller.Image)
 
+	router.PanicHandler = exception.ErrorHandler
+
 	return router
 }

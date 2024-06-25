@@ -55,12 +55,12 @@ func (repository *Product) FindProducts(ctx context.Context, tx *sql.Tx, page in
 	}
 
 	if whereClause != "" {
-		SQL += " WHERE " + whereClause + " GROUP BY p.id ORDER BY p.created_at DESC LIMIT 2 OFFSET ?"
+		SQL += " WHERE " + whereClause + " GROUP BY p.id ORDER BY p.created_at DESC LIMIT 20 OFFSET ?"
 	} else {
-		SQL += " GROUP BY p.id ORDER BY p.created_at DESC LIMIT 2 OFFSET ?"
+		SQL += " GROUP BY p.id ORDER BY p.created_at DESC LIMIT 20 OFFSET ?"
 	}
 
-	args = append(args, (page-1)*2)
+	args = append(args, (page-1)*20)
 
 	rows, err := tx.QueryContext(ctx, SQL, args...)
 	helper.PanicIfError(err)
@@ -113,8 +113,8 @@ func (repository *Product) CountProducts(ctx context.Context, tx *sql.Tx, filter
 		err := rows.Scan(&totalData)
 		helper.PanicIfError(err)
 
-		totalPage = totalData / 2
-		if totalData%2 != 0 {
+		totalPage = totalData / 20
+		if totalData%20 != 0 {
 			totalPage += 1
 		}
 

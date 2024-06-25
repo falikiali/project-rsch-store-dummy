@@ -84,7 +84,7 @@ func (service *Product) Create(ctx context.Context, product domain.Product, prod
 		Purpose:     newProduct.Purpose,
 		Category:    newProduct.Category,
 		Stock:       countStock,
-		Image:       "/image/" + newProductImage.Id,
+		Image:       "http://192.168.1.9:3003/image/" + newProductImage.Id,
 		DetailSize:  detailSizeResponses,
 	}
 }
@@ -108,9 +108,6 @@ func (service *Product) FindProducts(ctx context.Context, page int, filters map[
 	defer helper.CommitOrRollback(tx)
 
 	products := service.ProductRepository.FindProducts(ctx, tx, page, filters)
-	if len(products) == 0 {
-		panic(exception.NewNotFoundError("data is empty"))
-	}
 
 	productResponses := []web.ProductResponse{}
 	for _, product := range products {
@@ -122,7 +119,7 @@ func (service *Product) FindProducts(ctx context.Context, page int, filters map[
 			Purpose:     product.Purpose,
 			Category:    product.Category,
 			Stock:       product.Stock,
-			Image:       "/image/" + product.Image,
+			Image:       "http://192.168.1.9:3003/image/" + product.Image,
 		}
 		productResponses = append(productResponses, productResponse)
 	}
@@ -163,7 +160,7 @@ func (service *Product) FindProductById(ctx context.Context, idProduct string) w
 		Description: product.Description,
 		Purpose:     product.Purpose,
 		Category:    product.Category,
-		Image:       "/image/" + product.Image,
+		Image:       "http://192.168.1.9:3003/image/" + product.Image,
 		Stock:       product.Stock,
 		DetailSize:  detailSizeResponses,
 	}
